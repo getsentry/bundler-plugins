@@ -59,7 +59,7 @@
     "find-up": "^5.0.0",
     "glob": "^9.3.2",
     "magic-string": "0.30.8",
-    "unplugin": "1.0.1"
+    "unplugin": "1.16.0"
   },
   "devDependencies": {
     "@babel/preset-env": "7.18.2",
