@@ -84,6 +84,11 @@ export function sentryUnpluginFactory({
       debug: userOptions.debug ?? false,
     });
 
+    // Not a bulletproof check but should be good enough to at least sometimes determine
+    // if the plugin is called in dev/watch mode or for a  prod build. The important part
+    // here is to avoid a false positive. False negatives are okay.
+    const isDevMode = process.env["NODE_ENV"] === "development";
+
     try {
       const dotenvFile = fs.readFileSync(
         path.join(process.cwd(), ".env.sentry-build-plugin"),
@@ -106,7 +111,7 @@ export function sentryUnpluginFactory({
 
     const options = normalizeUserOptions(userOptions);
 
-    if (unpluginMetaContext.watchMode || options.disable) {
+    if (isDevMode || options.disable) {
       return [
         {
           name: "sentry-noop-plugin",
@@ -274,7 +279,7 @@ export function sentryUnpluginFactory({
         "Release injection disabled via `release.inject` option. Will not inject release."
       );
     } else if (!options.release.name) {
-      logger.warn(
+      logger.debug(
         "No release name provided. Will not inject release. Please set the `release.name` option to identify your release."
       );
     } else {
@@ -316,7 +321,7 @@ export function sentryUnpluginFactory({
     }
 
     if (!options.release.name) {
-      logger.warn(
+      logger.debug(
         "No release name provided. Will not create release. Please set the `release.name` option to identify your release."
       );
     } else if (!options.authToken) {
